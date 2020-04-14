@@ -190,12 +190,13 @@ class SequentialTests extends AsyncFunSuite with Matchers {
       _       <- tvar.modify(_ + 1)
     } yield ()
 
-    val background: IO[Unit] = (
-      for {
-        _ <- Timer[IO].sleep(2 seconds)
-        _ <- tvar.modify(_ + 1).commit[IO]
-      } yield ()
-    )
+    val background: IO[Unit] =
+      (
+        for {
+          _ <- Timer[IO].sleep(2 seconds)
+          _ <- tvar.modify(_ + 1).commit[IO]
+        } yield ()
+      )
 
     val prog = for {
       fiber <- background.start
@@ -218,7 +219,7 @@ class SequentialTests extends AsyncFunSuite with Matchers {
     *  which caused problems if two transactions produced by the same
     *  atomically invocation both needed to retry - they would have the same
     *  id and hence we would only register one to retry
-   */
+    */
   test("Atomically is referentially transparent") {
     val flag = TVar.of(false).commit[IO].unsafeRunSync
     val tvar = TVar.of(0L).commit[IO].unsafeRunSync
@@ -231,12 +232,13 @@ class SequentialTests extends AsyncFunSuite with Matchers {
       } yield ()
     }
 
-    val background: IO[Unit] = (
-      for {
-        _ <- Timer[IO].sleep(2 seconds)
-        _ <- flag.set(true).commit[IO]
-      } yield ()
-    )
+    val background: IO[Unit] =
+      (
+        for {
+          _ <- Timer[IO].sleep(2 seconds)
+          _ <- flag.set(true).commit[IO]
+        } yield ()
+      )
 
     val prog = for {
       fiber <- background.start

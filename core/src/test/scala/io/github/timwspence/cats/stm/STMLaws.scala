@@ -8,7 +8,7 @@ import cats.laws.discipline._
 import cats.laws.discipline.eq._
 import cats.laws.discipline.arbitrary._
 
-import io.github.timwspence.cats.stm.STM.internal.{TLog, TFailure, TResult, TRetry, TSuccess}
+import io.github.timwspence.cats.stm.STM.internal.{TFailure, TLog, TResult, TRetry, TSuccess}
 
 import org.scalacheck.{Arbitrary, Gen}
 import org.scalatest.funsuite.AnyFunSuite
@@ -34,11 +34,14 @@ object Implicits {
   implicit def eqSTM[A](implicit A: Eq[A]): Eq[STM[A]] =
     Eq.instance((stm1, stm2) => stm1.run(TLog.empty) === stm2.run(TLog.empty))
 
-  implicit def genSTM[A](implicit A: Gen[A]): Gen[STM[A]] = Gen.oneOf(
-    A.map(a => Function.const(TSuccess(a)) _)
-  , Gen.const(Function.const(TRetry) _)
-  , Gen.const(Function.const(TFailure(new RuntimeException("Txn failed"))) _)
-  ).map(STM.apply _)
+  implicit def genSTM[A](implicit A: Gen[A]): Gen[STM[A]] =
+    Gen
+      .oneOf(
+        A.map(a => Function.const(TSuccess(a)) _),
+        Gen.const(Function.const(TRetry) _),
+        Gen.const(Function.const(TFailure(new RuntimeException("Txn failed"))) _)
+      )
+      .map(STM.apply _)
 
   implicit def arbSTM[A](implicit Gen: Arbitrary[A]): Arbitrary[STM[A]] = Arbitrary(genSTM(Gen.arbitrary))
 

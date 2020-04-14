@@ -4,7 +4,7 @@ import cats.effect.{ContextShift, IO, Timer}
 import cats.instances.string._
 import cats.syntax.semigroup._
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.funsuite.AsyncFunSuite 
+import org.scalatest.funsuite.AsyncFunSuite
 
 import scala.concurrent.ExecutionContext
 
