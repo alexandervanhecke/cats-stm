@@ -243,6 +243,7 @@ class SequentialTests extends AsyncFunSuite with Matchers {
       _     <- retry.start
       _     <- retry.start
       _     <- fiber.join
+      _     <- Timer[IO].sleep(1 seconds) //Wait to allow retried txns to complete
     } yield ()
 
     for (_ <- prog.unsafeToFuture) yield {
